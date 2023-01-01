@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">ParticipaSalvaterra</string>
+    <string name="list_label">Lista</string>
+    <string name="add_label">Nuevo</string>
+    <string name="map_label">Mapa</string>
+    <string name="profile_label">Perfil</string>
+    <string name="dummy_title">Mas arboles</string>
+    <string name="dummy_secondary_text">Nos gustaría tener mas aboles, son muy monos y dan sombra</string>
+    <string name="dummy_supporting_text">Mas arboles</string>
+    <string name="search_hint">Buscar una propuesta…</string>
+    <string name="dummy_me_gusta">Me gusta</string>
+    <string name="dummy_no_me_gusta">No me gusta</string>
+</resources>
