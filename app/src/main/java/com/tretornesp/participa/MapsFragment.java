@@ -35,8 +35,7 @@ public class MapsFragment extends Fragment {
             LatLng home = new LatLng(42.087637, -8.501553);
             googleMap.addMarker(new MarkerOptions().position(home).title("Salvaterra"));
 
-            CameraPosition camera = CameraPosition.builder().target(home).zoom(googleMap.getMaxZoomLevel()).build();
-
+            CameraPosition camera = CameraPosition.builder().target(home).zoom(googleMap.getMaxZoomLevel()-5.0f).build();
 
             googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(camera));
         }

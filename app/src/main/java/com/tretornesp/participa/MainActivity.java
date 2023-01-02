@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
             selectedFragment = new MapsFragment();
         } else if (item.getItemId() == R.id.profile_item) {
             Log.d(MainActivity.TAG, "Navigating to Profile");
+            selectedFragment = new ProfileFragment();
         }
 
         if (selectedFragment != null) getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
