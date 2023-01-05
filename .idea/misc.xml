@@ -7,6 +7,9 @@
         <entry key="..\:/Users/xabier.iglesias/AndroidStudioProjects/ParticipaSalvaterra/app/src/main/res/drawable/icon_1.xml" value="0.195" />
         <entry key="..\:/Users/xabier.iglesias/AndroidStudioProjects/ParticipaSalvaterra/app/src/main/res/drawable/search_shape.xml" value="0.2985" />
         <entry key="..\:/Users/xabier.iglesias/AndroidStudioProjects/ParticipaSalvaterra/app/src/main/res/layout/activity_main.xml" value="0.2046875" />
+        <entry key="..\:/Users/xabier.iglesias/AndroidStudioProjects/ParticipaSalvaterra/app/src/main/res/layout/fragment_list.xml" value="0.18802083333333333" />
+        <entry key="..\:/Users/xabier.iglesias/AndroidStudioProjects/ParticipaSalvaterra/app/src/main/res/layout/fragment_new.xml" value="0.18802083333333333" />
+        <entry key="..\:/Users/xabier.iglesias/AndroidStudioProjects/ParticipaSalvaterra/app/src/main/res/layout/fragment_profile.xml" value="0.18802083333333333" />
         <entry key="..\:/Users/xabier.iglesias/AndroidStudioProjects/ParticipaSalvaterra/app/src/main/res/menu/bottom_navigation_menu.xml" value="0.18802083333333333" />
       </map>
     </option>
@@ -20,7 +23,7 @@
   <component name="VisualizationToolProject">
     <option name="state">
       <ProjectState>
-        <option name="scale" value="1.0" />
+        <option name="scale" value="0.1" />
       </ProjectState>
     </option>
   </component>
