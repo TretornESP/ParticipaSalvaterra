@@ -21,7 +21,7 @@ import com.google.android.material.navigation.NavigationBarView;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "mainActivity";
-    private static int DEFAULT_FRAGMENT = R.id.list_item;
+    private static final int DEFAULT_FRAGMENT = R.id.list_item;
     public static boolean permissionsGranted = false;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
@@ -29,8 +29,6 @@ public class MainActivity extends AppCompatActivity {
 
         if (id == R.id.list_item) {
             return new ListFragment();
-        } else if (id == R.id.new_item) {
-            return new NewFragment();
         } else if (id == R.id.map_item) {
             return new MapsFragment();
         } else if (id == R.id.profile_item) {
@@ -91,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean("rejectedLocation", false).apply(); //NASTY HACK
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnItemSelectedListener(itemSelectedListener);
 
@@ -100,15 +98,11 @@ public class MainActivity extends AppCompatActivity {
 
         int coarseRes = this.checkCallingOrSelfPermission(coarseLocation);
         int fineRes = this.checkCallingOrSelfPermission(fineLocation);
-        Toast.makeText(this, "Coarse: " + coarseRes + " Fine: " + fineRes, Toast.LENGTH_LONG)
-                .show();
+
         if (coarseRes == PackageManager.PERMISSION_GRANTED && fineRes == PackageManager.PERMISSION_GRANTED)
             MainActivity.permissionsGranted = true;
         else
             MainActivity.permissionsGranted = false;
-
-        if (Build.VERSION.SDK_INT
-        restoreNavigation();
     }
 
     @Override
@@ -124,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        PreferenceManager.getDefaultSharedPreferences(this).edit().putInt("selectedPosition", MainActivity.DEFAULT_FRAGMENT).commit();
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putInt("selectedPosition", MainActivity.DEFAULT_FRAGMENT).apply();
         restoreNavigation();
     }
 }

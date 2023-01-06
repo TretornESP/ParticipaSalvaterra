@@ -24,6 +24,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
  */
 public class NewFragment extends Fragment {
 
+    private final LatLng latLng;
+
+    public NewFragment(LatLng latLng) {
+        this.latLng = latLng;
+    }
+
     private final OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         /**
@@ -37,10 +43,9 @@ public class NewFragment extends Fragment {
          */
         @Override
         public void onMapReady(GoogleMap googleMap) {
-            LatLng home = new LatLng(42.087637, -8.501553);
-            googleMap.addMarker(new MarkerOptions().position(home).title("Salvaterra"));
+            googleMap.addMarker(new MarkerOptions().position(latLng).title("Nueva propuesta"));
 
-            CameraPosition camera = CameraPosition.builder().target(home).zoom(googleMap.getMaxZoomLevel()-5.0f).build();
+            CameraPosition camera = CameraPosition.builder().target(latLng).zoom(googleMap.getMaxZoomLevel()-5.0f).build();
 
             googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(camera));
         }

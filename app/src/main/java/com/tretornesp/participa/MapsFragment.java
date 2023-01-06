@@ -5,24 +5,69 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.location.Location;
+import android.location.LocationManager;
+import android.location.LocationRequest;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.Task;
 
 public class MapsFragment extends Fragment {
 
-    private boolean permissionsGranted = false;
+    private static final String TAG = "MapsFragment";
+
+    private final boolean permissionsGranted = false;
+    private Marker currentMarker = null;
+    private boolean infoDisplayed = false;
+
     private final OnMapReadyCallback callback = new OnMapReadyCallback() {
+
+        final DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
+            switch (which){
+                case DialogInterface.BUTTON_POSITIVE:
+                    getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, new NewFragment(currentMarker.getPosition())).commit();
+                    break;
+
+                case DialogInterface.BUTTON_NEGATIVE:
+                    if (currentMarker != null)
+                        currentMarker.remove();
+                    break;
+            }
+        };
+
+        private void newProposal(GoogleMap googleMap, LatLng latLng) {
+            MarkerOptions markerOptions = new MarkerOptions().position(latLng).title("cuak_empty_marker"); //Nasty hack!!
+            currentMarker = googleMap.addMarker(markerOptions);
+
+            CameraPosition camera = CameraPosition.builder().target(latLng).zoom(googleMap.getMaxZoomLevel()-5.0f).build();
+            googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(camera));
+
+            final Handler handler = new Handler();
+            handler.postDelayed(() -> {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setMessage(R.string.new_proposal_confirmation).setPositiveButton(R.string.yes, dialogClickListener)
+                        .setNegativeButton(R.string.no, dialogClickListener).setCancelable(false).show();
+            }, 1000);
+        }
 
         /**
          * Manipulates the map once available.
@@ -35,22 +80,79 @@ public class MapsFragment extends Fragment {
          */
         @Override
         @SuppressLint("MissingPermission")
-        public void onMapReady(GoogleMap googleMap) {
+        public void onMapReady(@NonNull GoogleMap googleMap) {
+
+
             LatLng home = new LatLng(42.087637, -8.501553);
             googleMap.addMarker(new MarkerOptions().position(home).title("Salvaterra"));
 
             CameraPosition camera = CameraPosition.builder().target(home).zoom(googleMap.getMaxZoomLevel()-5.0f).build();
 
             googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(camera));
+            googleMap.setInfoWindowAdapter(new CustomInfoWindowAdapter(LayoutInflater.from(getActivity())));
+
+            LatLngBounds SALVATERRA = new LatLngBounds(
+                    new LatLng(42.052705, -8.557369),
+                    new LatLng(42.188511, -8.390883)
+            );
+
+            googleMap.setLatLngBoundsForCameraTarget(SALVATERRA);
 
             if (MainActivity.permissionsGranted) {
                 googleMap.setMyLocationEnabled(true);
-            } else {
-                Toast.makeText(getContext(), "Location services disabled", Toast.LENGTH_LONG)
-                        .show();
+                googleMap.setOnMyLocationButtonClickListener(() -> {
+                    // Return false so that we don't consume the event and the default behavior still occurs
+                    // (the camera animates to the user's current position).
+
+                    return false;
+                });
+                googleMap.setOnMyLocationClickListener(location -> {
+
+                    if (infoDisplayed) return;
+
+                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+
+                    if (!SALVATERRA.contains(latLng)) {
+                        Toast.makeText(getContext(), R.string.out_of_bounds, Toast.LENGTH_LONG).show();
+                        return;
+                    }
+
+                    newProposal(googleMap, latLng);
+                });
             }
+
+            googleMap.setOnMapClickListener(latLng -> {
+
+                if (infoDisplayed) return;
+
+                if (!SALVATERRA.contains(latLng)) {
+                    Toast.makeText(getContext(), R.string.out_of_bounds, Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                newProposal(googleMap, latLng);
+            });
+
+            googleMap.setOnMarkerClickListener(marker -> {
+                String markername = marker.getTitle();
+                Toast.makeText(getContext(), "Marker: " + markername, Toast.LENGTH_SHORT).show();
+                infoDisplayed = true;
+                return false;
+            });
+
+            googleMap.setOnInfoWindowClickListener(marker -> {
+                String markername = marker.getTitle();
+                Toast.makeText(getContext(), "Clicked info: " + markername, Toast.LENGTH_SHORT).show();
+            });
+
+            //Kind of nasty!
+            googleMap.setOnInfoWindowCloseListener(marker -> {
+                final Handler handler = new Handler();
+                handler.postDelayed(() -> infoDisplayed = false, 50);
+            });
         }
     };
+
 
     @Nullable
     @Override
@@ -69,4 +171,5 @@ public class MapsFragment extends Fragment {
             mapFragment.getMapAsync(callback);
         }
     }
+
 }
