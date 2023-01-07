@@ -20,7 +20,7 @@
     <string name="logout">Cerrar sesión</string>
     <string name="report_proposal">Denunciar una propuesta</string>
     <string name="help">Ayuda</string>
-    <string name="proposal_pics">Imagen de la propuesta</string>
+    <string name="proposal_pics">Imágenes de la propuesta</string>
     <string name="new_title">Título de la propuesta</string>
     <string name="new_text">Cuerpo de la propuesta</string>
     <string name="new_location">Ubicación de la propuesta</string>
@@ -31,4 +31,18 @@
     <string name="yes">Si</string>
     <string name="no">no</string>
     <string name="out_of_bounds">Propuesta fuera del área de Salvaterra</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="app_title">Participa Salvaterra</string>
+    <string name="eula_title">Términos y condiciones</string>
+    <string name="register_confirmation">Al continuar aceptas los términos y condiciones del servicio disponibles en el <a href="https://celeiro.gal/">siguiente</a> enlace. Afirmas tener 18 años de edad al momento de completar este registro y que los datos introducidos son correctos.</string>
+    <string name="accept">Aceptar</string>
+    <string name="decline">Cancelar</string>
 </resources>

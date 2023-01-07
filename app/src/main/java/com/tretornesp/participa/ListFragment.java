@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.imageview.ShapeableImageView;
+
 /**
  * A simple {@link Fragment} subclass.
  * create an instance of this fragment.

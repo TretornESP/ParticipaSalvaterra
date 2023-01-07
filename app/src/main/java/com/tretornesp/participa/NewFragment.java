@@ -48,6 +48,7 @@ public class NewFragment extends Fragment {
             CameraPosition camera = CameraPosition.builder().target(latLng).zoom(googleMap.getMaxZoomLevel()-5.0f).build();
 
             googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(camera));
+            googleMap.getUiSettings().setAllGesturesEnabled(false);
         }
     };
 

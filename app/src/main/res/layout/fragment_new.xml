@@ -5,14 +5,72 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+        app:layout_constraintBaseline_toBaselineOf="parent"
+        android:layout_marginTop="10dp"
+        android:id="@+id/input_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:paddingTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:counterEnabled="true"
+            app:counterMaxLength="20"
+            android:hint="@string/new_title"
+            app:errorEnabled="true"
+            app:endIconMode="clear_text">
+
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:paddingTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:counterEnabled="true"
+            app:counterMaxLength="500"
+            android:hint="@string/new_text"
+            app:errorEnabled="true"
+            app:endIconMode="clear_text">
+
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:lines="6"
+                android:gravity="top|left"
+                android:inputType="textMultiLine"
+                android:overScrollMode="always"
+                android:scrollbarStyle="insideInset"
+                android:scrollbars="vertical"
+                android:scrollHorizontally="false"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/photo_picker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="20dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        app:layout_constraintBaseline_toBaselineOf="parent">
+        android:paddingBottom="20dp"
+        app:layout_constraintTop_toBottomOf="@id/input_layout"
+        app:layout_constraintLeft_toLeftOf="@id/input_layout"
+        app:layout_constraintRight_toRightOf="@id/input_layout">
+
+        <TextView
+            android:layout_marginStart="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/proposal_pics"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -91,72 +149,15 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_marginTop="10dp"
-        android:id="@+id/input_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        app:layout_constraintTop_toBottomOf="@id/photo_picker">
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:paddingTop="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:counterEnabled="true"
-            app:counterMaxLength="20"
-            android:hint="@string/new_title"
-            app:errorEnabled="true"
-            app:startIconDrawable="@drawable/ic_baseline_title_24">
-
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:paddingTop="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:counterEnabled="true"
-            app:counterMaxLength="500"
-            android:hint="@string/new_text"
-            app:errorEnabled="true"
-            app:endIconMode="clear_text">
-
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:lines="6"
-                android:gravity="top|left"
-                android:inputType="textMultiLine"
-                android:overScrollMode="always"
-                android:scrollbarStyle="insideInset"
-                android:scrollbars="vertical"
-                android:scrollHorizontally="false"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-
-    </LinearLayout>
-
-    <LinearLayout
+        android:id="@+id/location_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="10dp"
         android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@id/input_layout"
+        app:layout_constraintTop_toBottomOf="@id/photo_picker"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="@id/input_layout"
-        app:layout_constraintLeft_toRightOf="@id/input_layout">
-
-        <TextView
-            android:layout_marginStart="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/new_location"/>
+        app:layout_constraintLeft_toLeftOf="@id/photo_picker"
+        app:layout_constraintLeft_toRightOf="@id/photo_picker">
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/minimap"
@@ -165,4 +166,15 @@
             android:layout_height="wrap_content"
             tools:context=".NewFragment" />
     </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/create_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="@id/location_layout"
+        app:layout_constraintRight_toRightOf="@id/location_layout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:elevation="2dp"
+        android:text="Crear"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

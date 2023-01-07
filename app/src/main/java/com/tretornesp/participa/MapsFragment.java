@@ -38,6 +38,7 @@ public class MapsFragment extends Fragment {
     private final boolean permissionsGranted = false;
     private Marker currentMarker = null;
     private boolean infoDisplayed = false;
+    private boolean uiLocked = false;
 
     private final OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -52,7 +53,16 @@ public class MapsFragment extends Fragment {
                         currentMarker.remove();
                     break;
             }
+            unlock();
         };
+
+        private void lock() {
+            uiLocked = true;
+        }
+
+        private void unlock() {
+            uiLocked = false;
+        }
 
         private void newProposal(GoogleMap googleMap, LatLng latLng) {
             MarkerOptions markerOptions = new MarkerOptions().position(latLng).title("cuak_empty_marker"); //Nasty hack!!
@@ -108,25 +118,36 @@ public class MapsFragment extends Fragment {
                 });
                 googleMap.setOnMyLocationClickListener(location -> {
 
-                    if (infoDisplayed) return;
+                    if (infoDisplayed || uiLocked) {
+                        return;
+                    }
+
+                    lock();
 
                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
                     if (!SALVATERRA.contains(latLng)) {
                         Toast.makeText(getContext(), R.string.out_of_bounds, Toast.LENGTH_LONG).show();
+                        unlock();
                         return;
                     }
 
                     newProposal(googleMap, latLng);
+
                 });
             }
 
             googleMap.setOnMapClickListener(latLng -> {
 
-                if (infoDisplayed) return;
+                if (infoDisplayed || uiLocked) {
+                    return;
+                }
+
+                lock();
 
                 if (!SALVATERRA.contains(latLng)) {
                     Toast.makeText(getContext(), R.string.out_of_bounds, Toast.LENGTH_LONG).show();
+                    unlock();
                     return;
                 }
 

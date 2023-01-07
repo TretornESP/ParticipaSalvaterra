@@ -12,5 +12,8 @@
         android:top="10dp"
         android:right="10dp"
         android:bottom="10dp" />
+    <stroke
+        android:color="@color/cardview_shadow_start_color"
+        android:width="1dp"/>
 
 </shape>
