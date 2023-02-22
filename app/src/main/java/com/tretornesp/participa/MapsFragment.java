@@ -67,7 +67,7 @@ public class MapsFragment extends Fragment {
         private void newProposal(GoogleMap googleMap, LatLng latLng) {
             MarkerOptions markerOptions = new MarkerOptions().position(latLng).title("cuak_empty_marker"); //Nasty hack!!
             currentMarker = googleMap.addMarker(markerOptions);
-
+            Log.d(TAG, "Latitude: " + latLng.latitude + " longitude: " + latLng.longitude);
             CameraPosition camera = CameraPosition.builder().target(latLng).zoom(googleMap.getMaxZoomLevel()-5.0f).build();
             googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(camera));
 
