@@ -10,9 +10,11 @@ import androidx.fragment.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textview.MaterialTextView;
+import com.tretornesp.participa.service.LoginService;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -52,8 +54,24 @@ public class LoginFragment extends Fragment {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), MainActivity.class);
-                startActivity(intent);
+                LoginService service = new LoginService();
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (service.login("xabi@xabi.com", "patatoska")) {
+                            getActivity().runOnUiThread(() -> {
+                                Intent intent = new Intent(getActivity(), MainActivity.class);
+                                startActivity(intent);
+                            });
+
+                        } else {
+                            getActivity().runOnUiThread(() -> {
+                                Toast.makeText(getContext(), "Error login", Toast.LENGTH_LONG).show();
+                            });
+                        }
+                    }
+                }).start();
             }
         });
     }
