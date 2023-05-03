@@ -1,8 +1,9 @@
 package com.tretornesp.participa.repository;
 
 public interface RepositoryIF {
-    boolean login(String user, String password);
+    String login(String user, String password);
     void logout();
-    boolean validate_token(String token);
-    String refresh_token(String token);
+    boolean validateToken(String token);
+    String refreshToken(String token);
+    String getProposals(String token, String start, int size);
 }

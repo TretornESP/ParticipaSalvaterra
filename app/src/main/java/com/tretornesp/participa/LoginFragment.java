@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textview.MaterialTextView;
 import com.tretornesp.participa.service.LoginService;
 
@@ -54,7 +55,11 @@ public class LoginFragment extends Fragment {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LoginService service = new LoginService();
+                LoginService service = LoginService.getInstance();
+
+                //Get email and password from the form
+                TextInputEditText email = getView().findViewById(R.id.editTextEmail);
+                TextInputEditText password = getView().findViewById(R.id.editTextPassword);
 
                 new Thread(new Runnable() {
                     @Override

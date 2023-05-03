@@ -6,6 +6,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.tretornesp.participa.BuildConfig;
+import com.tretornesp.participa.util.SSLUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,70 +33,34 @@ public class ServerRepository implements RepositoryIF {
     private static final String logoutUri = "/security/logout";
     private static final String validateUri = "/security/validateToken";
     private static final String refreshUri = "/security/refreshToken";
+    private static final String proposalUri = "/proposal";
 
 
     public ServerRepository() {
     }
 
     @Override
-    public boolean login(String user, String password) {
+    public String login(String user, String password) {
         JSONObject object = new JSONObject();
         try {
             object.put("username", user);
             object.put("password", password);
         } catch (JSONException exception) {
-            return false;
+            return null;
         }
-
-
-
-        TrustManager TRUST_ALL_CERTS = new X509TrustManager() {
-            @Override
-            public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-            }
-
-            @Override
-            public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-            }
-
-            @Override
-            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                return new java.security.cert.X509Certificate[] {};
-            }
-        };
 
         RequestBody requestBody = RequestBody.create(object.toString(), JSON);
         String baseUrl = BuildConfig.ROOT_URL;
         Request request = new Request.Builder().url(baseUrl+loginUri).post(requestBody).build();
 
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-
-        try {
-            SSLContext sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, new TrustManager[]{TRUST_ALL_CERTS}, new java.security.SecureRandom());
-            builder.sslSocketFactory(sslContext.getSocketFactory(), (X509TrustManager) TRUST_ALL_CERTS);
-            builder.hostnameVerifier(new HostnameVerifier() {
-                @Override
-                public boolean verify(String s, SSLSession sslSession) {
-                    return true;
-                }
-            });
-        } catch (Exception e) {
-            Log.d("CUAK", "Error trusting all");
-            return false;
-        }
-
-
         OkHttpClient client = builder.build();
 
         try (Response response = client.newCall(request).execute()) {
              if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-             Log.d("CUAK", response.body().toString());
-             return true;
+             return response.body().string();
         } catch (Exception e) {
-            Log.d("CUAK", "Exception");
-            Log.d("CUAK", e.toString());
-            return false;
+            return null;
         }
     }
 
@@ -105,12 +70,47 @@ public class ServerRepository implements RepositoryIF {
     }
 
     @Override
-    public boolean validate_token(String token) {
+    public boolean validateToken(String token) {
         return false;
     }
 
     @Override
-    public String refresh_token(String token) {
+    public String refreshToken(String token) {
         return null;
     }
+
+    @Override
+    public String getProposals(String token, String start, int size) {
+        if (token == null) return null;
+
+        String baseUrl;
+        if (start.equals("-1")) {
+            baseUrl = BuildConfig.ROOT_URL+proposalUri+"/?items="+size;
+        } else {
+            baseUrl = BuildConfig.ROOT_URL+proposalUri+"/?start="+start+"&items="+size;
+        }
+        Log.d("CUAK", "getProposals: " + baseUrl);
+        //baseUrl = "https://participasalvaterra.es/proposal/?items=1&start=645292df925c9b587f2920bc";
+        Request request = new Request.Builder()
+                .url(baseUrl)
+                .addHeader("Authorization", "Bearer "+token)
+                .build();
+
+        Log.d("CUAK", "getProposals: " + request.toString());
+
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        OkHttpClient client = builder.build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+            return response.body().string();
+        } catch (Exception e) {
+            Log.d("CUAK", "getProposals error: " + e.getMessage());
+            Log.d("CUAK", "getProposals error: " + e.getStackTrace());
+            Log.d("CUAK", "getProposals error: " + e.getCause());
+
+            return null;
+        }
+    }
+
 }
