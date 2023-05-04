@@ -75,11 +75,16 @@ public class ProposalModel {
         return title;
     }
 
+    public void setLikes(float likes) {
+        this.likes = likes;
+    }
+
     public static ProposalModel fromJson(String json) {
         Gson gson = new Gson();
         return gson.fromJson(json, ProposalModel.class);
     }
 
+    /*
     public MaterialCardView toMaterialCardView(Context context) {
         MaterialCardView card = new MaterialCardView(context);
         card.setLayoutParams(new MaterialCardView.LayoutParams(
@@ -149,5 +154,5 @@ public class ProposalModel {
         card.addView(layout);
 
         return card;
-    }
+    }*/
 }
