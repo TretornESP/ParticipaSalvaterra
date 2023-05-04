@@ -1,6 +1,7 @@
-package com.tretornesp.participa.model;
+package com.tretornesp.participa.model.response;
 
 import com.google.gson.Gson;
+import com.tretornesp.participa.model.ProposalModel;
 
 import java.util.List;
 

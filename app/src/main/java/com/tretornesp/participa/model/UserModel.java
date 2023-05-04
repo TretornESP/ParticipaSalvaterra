@@ -10,7 +10,6 @@ public class UserModel {
     private String uid;
     private boolean ispublic;
     private String email;
-    private boolean verified;
     private List<String> liked_proposals;
 
     private UserModel(
@@ -19,7 +18,6 @@ public class UserModel {
             String uid,
             boolean ispublic,
             String email,
-            boolean verified,
             List<String> liked_proposals
     ) {
         this.name = name;
@@ -27,7 +25,6 @@ public class UserModel {
         this.uid = uid;
         this.ispublic = ispublic;
         this.email = email;
-        this.verified = verified;
         this.liked_proposals = liked_proposals;
     }
 
@@ -44,7 +41,6 @@ public class UserModel {
                 ", uid='" + uid + '\'' +
                 ", ispublic=" + ispublic +
                 ", email='" + email + '\'' +
-                ", verified=" + verified +
                 ", liked_proposals=" + liked_proposals +
                 '}';
     }
@@ -67,10 +63,6 @@ public class UserModel {
 
     public String getEmail() {
         return email;
-    }
-
-    public boolean isVerified() {
-        return verified;
     }
 
     public List<String> getLiked_proposals() {

@@ -64,7 +64,8 @@ public class LoginFragment extends Fragment {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        if (service.login("xabi@xabi.com", "patatoska")) {
+                        //TODO: Changeme
+                        if (service.login("xabi@xabi.com", "patatoska") != null) {
                             getActivity().runOnUiThread(() -> {
                                 Intent intent = new Intent(getActivity(), MainActivity.class);
                                 startActivity(intent);

@@ -1,4 +1,4 @@
-package com.tretornesp.participa.model;
+package com.tretornesp.participa.model.response;
 
 import com.google.gson.Gson;
 
