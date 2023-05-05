@@ -10,13 +10,19 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textview.MaterialTextView;
+import com.tretornesp.participa.controller.RegisterController;
+import com.tretornesp.participa.model.UserModel;
+import com.tretornesp.participa.util.Callback;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,12 +30,54 @@ import com.google.android.material.textview.MaterialTextView;
  */
 public class RegisterFragment extends Fragment {
 
+    private final Callback registerCallback = new Callback() {
+
+        private void toast(String message) {
+            getActivity().runOnUiThread(() -> Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show());
+        }
+
+        @Override
+        public void onSuccess (Object data) {
+            Log.d("RegisterFragment", "Registered user: " + ((UserModel)data).getUid());
+            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container_login, new LoginFragment());
+            transaction.commit();
+        }
+
+        @Override
+        public void onFailure (String error) {
+            toast(error);
+        }
+
+        @Override
+        public void onLoginRequired () {
+
+        }
+    };
+
     final DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
         switch (which){
-            case DialogInterface.BUTTON_POSITIVE:
-                //Login
-                break;
+            case DialogInterface.BUTTON_POSITIVE: {
+                String email = ((TextView) getView().findViewById(R.id.email)).getText().toString();
+                String password = ((TextView) getView().findViewById(R.id.password)).getText().toString();
+                String passwordConfirmation = ((TextView) getView().findViewById(R.id.password_confirmation)).getText().toString();
+                String name = ((TextView) getView().findViewById(R.id.name)).getText().toString();
+                String dni = ((TextView) getView().findViewById(R.id.dni)).getText().toString();
+                RadioGroup radioGroup = getView().findViewById(R.id.radio_group);
+                int selectedId = radioGroup.getCheckedRadioButtonId();
+                boolean isPublic = selectedId == R.id.public_selected;
 
+                new RegisterController().register(
+                        name,
+                        email,
+                        password,
+                        dni,
+                        passwordConfirmation,
+                        isPublic,
+                        registerCallback
+                );
+                break;
+            }
             case DialogInterface.BUTTON_NEGATIVE:
                 //Nothing
                 break;

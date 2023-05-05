@@ -23,4 +23,8 @@ public class CoordinatesModel {
         Gson gson = new Gson();
         return gson.fromJson(json, CoordinatesModel.class);
     }
+
+    public static CoordinatesModel fromLatLng(double lat, double lng) {
+        return new CoordinatesModel(lat, lng);
+    }
 }

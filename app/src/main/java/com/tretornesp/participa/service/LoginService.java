@@ -26,19 +26,16 @@ public class LoginService {
         return instance;
     }
 
-    public CredentialsModel getCredentials() throws TokenMissingException {
-        if (this.cached_credentials == null) {
+    public static CredentialsModel getCredentials() throws TokenMissingException {
+        if (instance == null) {
             throw new TokenMissingException("No credentials found");
-        } else {
-            return this.cached_credentials;
         }
-    }
 
-    public boolean isLoggedIn() {
-        if (this.cached_credentials == null) {
-            return false;
+        if (instance.cached_credentials == null) {
+            throw new TokenMissingException("No credentials found");
         }
-        return this.cached_credentials.getToken() != null;
+
+        return instance.cached_credentials;
     }
 
     public CredentialsModel login(String user, String password) {
@@ -52,48 +49,63 @@ public class LoginService {
 
             return cached_credentials;
         } catch (Exception e) {
-            Log.d("LoginService", e.getMessage());
+            Log.d("LoginService", e.toString());
             return null;
         }
     }
-    public void logout() {
+    public boolean isLoggedIn(String token) {
+        if (this.cached_credentials == null) {
+            return false;
+        }
+        if (this.cached_credentials.getToken() == null) {
+            return false;
+        }
+
+        return this.cached_credentials.getToken().equals(token);
+    }
+    public void logout(String token) {
         ServerRepository repository = new ServerRepository();
 
         try {
-            repository.logout(this.cached_credentials.getToken());
+            repository.logout(token);
             this.cached_credentials = null;
         } catch (Exception e) {
-            Log.d("LoginService", e.getMessage());
+            Log.d("LoginService", e.toString());
         }
     }
-    public boolean isVerified() {
+    public boolean isVerified(String token) {
         ServerRepository repository = new ServerRepository();
         try {
-            return repository.isVerified(this.cached_credentials.getToken());
+            return repository.isVerified(token);
         } catch (Exception e) {
-            Log.d("LoginService", e.getMessage());
+            Log.d("LoginService", e.toString());
             return false;
         }
     }
-    public boolean validateToken() {
+    public boolean validateToken(String token) {
         ServerRepository repository = new ServerRepository();
         try {
-            return repository.validateToken(this.cached_credentials.getToken());
+            return repository.validateToken(token);
         } catch (Exception e) {
-            Log.d("LoginService", e.getMessage());
+            Log.d("LoginService", e.toString());
             return false;
         }
     }
-    public void refreshToken() {
+    public CredentialsModel refreshToken(String token) {
         ServerRepository repository = new ServerRepository();
 
         try {
-            String response = repository.refreshToken(this.cached_credentials.getRefresh());
+            String response = repository.refreshToken(token);
             RefreshTokenResponse responseModel = RefreshTokenResponse.fromJson(response);
-            String token = responseModel.getToken();
-            this.cached_credentials.setToken(token);
+            String new_token = responseModel.getToken();
+            if (cached_credentials == null) {
+                throw new TokenMissingException("No credentials found");
+            }
+            this.cached_credentials.setToken(new_token);
+            return this.cached_credentials;
         } catch (Exception e) {
-            Log.d("LoginService", e.getMessage());
+            Log.d("LoginService", e.toString());
+            return null;
         }
     }
 }

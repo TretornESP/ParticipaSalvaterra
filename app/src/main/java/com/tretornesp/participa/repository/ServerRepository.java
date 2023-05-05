@@ -64,9 +64,9 @@ public class ServerRepository {
     private static final String refreshUri = "/security/refreshToken";
     private static final String verifyUri = "/security/isVerified";
 
-    private static final String userUri = "/user";
+    private static final String userUri = "/user/";
 
-    private static final String proposalUri = "/proposal";
+    private static final String proposalUri = "/proposal/";
 
     private static final String uploadUri = "/uploads/photo";
 
@@ -164,32 +164,32 @@ public class ServerRepository {
                 return new InternalResponse(response.body().string(), response.code());
             }
             case 400: {
-                throw new BadRequestException();
+                throw new BadRequestException("Bad request");
             }
             case 401: {
                 String responseString = response.body().string();
                 JSONObject object = new JSONObject(responseString);
                 String error = object.getString("msg");
                 if (error.equals("Token has expired")) {
-                    throw new TokenExpiredException();
+                    throw new TokenExpiredException("Token expired");
                 } else {
-                    throw new LoginRequiredException();
+                    throw new LoginRequiredException("Login required");
                 }
             }
             case 403: {
-                throw new LoginRequiredException();
+                throw new LoginRequiredException("Forbidden");
             }
             case 412: {
                 return new InternalResponse(response.body().string(), response.code());
             }
             case 422: {
-                throw new BadRequestException();
+                throw new BadRequestException("Unsafe input detected");
             }
             case 500: {
-                throw new ServerErrorException();
+                throw new ServerErrorException("Server error");
             }
             default:
-                throw new UnknownResponseCodeException();
+                throw new UnknownResponseCodeException("Unknown response code");
         }
     }
     private InternalResponse act(Method method, String urlPart, String token, String body, File file) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException {
@@ -218,7 +218,7 @@ public class ServerRepository {
                 break;
             }
             default: {
-                throw new RequestConformingException();
+                throw new RequestConformingException("Request method not supported");
             }
         }
 
@@ -227,9 +227,12 @@ public class ServerRepository {
 
         try (Response response = client.newCall(request).execute()) {
             return parseResponse(response);
-        } catch (IOException | JSONException e) {
-            throw new ResponseProcessingException();
+        } catch (IOException ioe) {
+            throw new ResponseProcessingException("[" + baseUrl + "]Got IOException parsing response: " + ioe.getMessage());
+        } catch (JSONException e) {
+            throw new ResponseProcessingException("Cant parse json response");
         }
+
     }
 
     //Security calls
@@ -263,7 +266,7 @@ public class ServerRepository {
     }
 
     public String getUser(String token, String uid) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException {
-        InternalResponse internalResponse = act(Method.GET, userUri+"/"+uid, token, null, null);
+        InternalResponse internalResponse = act(Method.GET, userUri + uid, token, null, null);
         return internalResponse.getBody();
     }
 
@@ -289,9 +292,9 @@ public class ServerRepository {
             baseUrl = proposalUri;
         } else {
             if (start == null || start.equals("-1")) {
-                baseUrl = proposalUri + "/?items=" + size;
+                baseUrl = proposalUri + "?items=" + size;
             } else {
-                baseUrl = proposalUri + "/?start=" + start + "&items=" + size;
+                baseUrl = proposalUri + "?start=" + start + "&items=" + size;
             }
         }
 
@@ -300,7 +303,7 @@ public class ServerRepository {
     }
 
     public String getProposal(String token, String uid) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException{
-        InternalResponse internalResponse = act(Method.GET, proposalUri+"/"+uid, token, null, null);
+        InternalResponse internalResponse = act(Method.GET, proposalUri+uid, token, null, null);
         return internalResponse.getBody();
     }
 
@@ -310,21 +313,21 @@ public class ServerRepository {
     }
 
     public void deleteProposal(String token, String proposalId) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException{
-        act(Method.DELETE, proposalUri + "/" + proposalId, token, null, null);
+        act(Method.DELETE, proposalUri + proposalId, token, null, null);
     }
 
     public String editProposal(String token, String proposalId, String proposalData) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException{
-        InternalResponse internalResponse = act(Method.PUT, proposalUri + "/" + proposalId, token, proposalData, null);
+        InternalResponse internalResponse = act(Method.PUT, proposalUri + proposalId, token, proposalData, null);
         return internalResponse.getBody();
     }
 
     public String likeProposal(String token, String proposalId) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException{
-        InternalResponse internalResponse = act(Method.POST, proposalUri + "/like?id=" + proposalId, token, null, null);
+        InternalResponse internalResponse = act(Method.GET, proposalUri + "like?id=" + proposalId, token, null, null);
         return internalResponse.getBody();
     }
 
     public String unlikeProposal(String token, String proposalId) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException{
-        InternalResponse internalResponse = act(Method.DELETE, proposalUri + "/dislike?id=" + proposalId, token, null, null);
+        InternalResponse internalResponse = act(Method.GET, proposalUri + "dislike?id=" + proposalId, token, null, null);
         return internalResponse.getBody();
     }
 

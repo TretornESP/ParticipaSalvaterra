@@ -26,6 +26,7 @@
 
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/title_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -42,6 +43,7 @@
 
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/text_edit_text"
                 android:lines="6"
                 android:gravity="top|left"
                 android:inputType="textMultiLine"

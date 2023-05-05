@@ -45,7 +45,7 @@ public class ProposalService {
                 }
                 return proposals.getProposals();
             } catch (Exception e) {
-                Log.d("ProposalService", e.getMessage());
+                Log.d("ProposalService", e.toString());
                 return null;
             }
         } else {
@@ -71,12 +71,12 @@ public class ProposalService {
             this.cached_proposals.add(proposal);
             return proposal;
         } catch (Exception e) {
-            Log.d("ProposalService", e.getMessage());
+            Log.d("ProposalService", e.toString());
             return null;
         }
     }
 
-    public CreateProposalResponseModel createProposal(String token, CreateProposalRequestModel requestModel) {
+    public ProposalModel createProposal(String token, CreateProposalRequestModel requestModel) {
         ServerRepository repository = new ServerRepository();
         try {
             String proposal_response = repository.createProposal(token, requestModel.toJson());
@@ -87,9 +87,9 @@ public class ProposalService {
                 this.cached_proposals = new ArrayList<>();
                 this.cached_proposals.add(proposal.getProposal());
             }
-            return proposal;
+            return proposal.getProposal();
         } catch (Exception e) {
-            Log.d("ProposalService", e.getMessage());
+            Log.d("ProposalService", e.toString());
             return null;
         }
     }
@@ -107,7 +107,7 @@ public class ProposalService {
                 }
             }
         } catch (Exception e) {
-            Log.d("ProposalService", e.getMessage());
+            Log.d("ProposalService", e.toString());
         }
     }
 
@@ -126,7 +126,7 @@ public class ProposalService {
             }
             return proposal.getProposal();
         } catch (Exception e) {
-            Log.d("ProposalService", e.getMessage());
+            Log.d("ProposalService", e.toString());
             return null;
         }
     }
@@ -149,7 +149,7 @@ public class ProposalService {
 
             return (int) fl;
         } catch (Exception e) {
-            Log.d("ProposalService", e.getMessage());
+            Log.d("ProposalService", e.toString());
             return -1;
         }
     }
@@ -172,8 +172,12 @@ public class ProposalService {
 
             return (int) fl;
         } catch (Exception e) {
-            Log.d("ProposalService", e.getMessage());
+            Log.d("ProposalService", e.toString());
             return -1;
         }
+    }
+
+    public void invalidateCache() {
+        this.cached_proposals = null;
     }
 }

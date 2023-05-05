@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.material.textview.MaterialTextView;
+import com.tretornesp.participa.util.Callback;
 
 public class LoginActivity extends AppCompatActivity {
 

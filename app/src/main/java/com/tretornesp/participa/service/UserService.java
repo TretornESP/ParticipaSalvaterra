@@ -6,6 +6,8 @@ import com.tretornesp.participa.model.UserModel;
 import com.tretornesp.participa.model.request.EditUserRequestModel;
 import com.tretornesp.participa.model.request.RegisterUserRequestModel;
 import com.tretornesp.participa.model.response.EditUserResponseModel;
+import com.tretornesp.participa.model.response.GetCurrentUserResponseModel;
+import com.tretornesp.participa.model.response.RegisterUserResponseModel;
 import com.tretornesp.participa.repository.ServerRepository;
 
 import java.util.ArrayList;
@@ -47,7 +49,7 @@ public class UserService {
             this.cached_users.add(user);
             return user;
         } catch (Exception e) {
-            Log.d("UserService", e.getMessage());
+            Log.d("UserService", e.toString());
             return null;
         }
     }
@@ -56,11 +58,11 @@ public class UserService {
             ServerRepository repository = new ServerRepository();
             try {
                 String user_response = repository.getCurrentUser(token);
-                UserModel user = UserModel.fromJson(user_response);
-                this.cached_current_user = user;
-                return user;
+                GetCurrentUserResponseModel user = GetCurrentUserResponseModel.fromJson(user_response);
+                this.cached_current_user = user.getUser();
+                return user.getUser();
             } catch (Exception e) {
-                Log.d("UserService", e.getMessage());
+                Log.d("UserService", e.toString());
                 return null;
             }
         } else {
@@ -74,7 +76,7 @@ public class UserService {
             EditUserResponseModel user = EditUserResponseModel.fromJson(user_response);
             this.cached_current_user = user.getUser();
         } catch (Exception e) {
-            Log.d("UserService", e.getMessage());
+            Log.d("UserService", e.toString());
         }
     }
     public void deleteUser(String token) {
@@ -83,17 +85,19 @@ public class UserService {
             repository.deleteUser(token);
             this.cached_current_user = null;
         } catch (Exception e) {
-            Log.d("UserService", e.getMessage());
+            Log.d("UserService", e.toString());
         }
     }
-    public void registerUser(RegisterUserRequestModel requestModel) {
+    public UserModel registerUser(RegisterUserRequestModel requestModel) {
         ServerRepository repository = new ServerRepository();
         try {
             String user_response = repository.registerUser(requestModel.toJson());
-            EditUserResponseModel user = EditUserResponseModel.fromJson(user_response);
+            RegisterUserResponseModel user = RegisterUserResponseModel.fromJson(user_response);
             this.cached_current_user = user.getUser();
+            return user.getUser();
         } catch (Exception e) {
-            Log.d("UserService", e.getMessage());
+            Log.d("UserService", e.toString());
+            return null;
         }
     }
     public void invalidateCache() {

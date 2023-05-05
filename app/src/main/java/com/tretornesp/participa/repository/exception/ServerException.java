@@ -1,7 +1,7 @@
 package com.tretornesp.participa.repository.exception;
 
 public class ServerException extends Exception {
-    public ServerException() {
-        super();
+    public ServerException(String message) {
+        super(message);
     }
 }

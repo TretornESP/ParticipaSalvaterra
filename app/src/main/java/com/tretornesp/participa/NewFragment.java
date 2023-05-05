@@ -17,12 +17,33 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
+import com.tretornesp.participa.controller.ProposalController;
+import com.tretornesp.participa.util.Callback;
 
 /**
  * A simple {@link Fragment} subclass.
  * create an instance of this fragment.
  */
 public class NewFragment extends Fragment {
+
+    private final Callback createProposalCallback = new Callback() {
+        @Override
+        public void onSuccess(Object data) {
+
+        }
+
+        @Override
+        public void onFailure(String message) {
+
+        }
+
+        @Override
+        public void onLoginRequired() {
+
+        }
+    }
 
     private final LatLng latLng;
 
@@ -58,6 +79,18 @@ public class NewFragment extends Fragment {
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.minimap);
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
+        }
+
+        MaterialButton materialButton = getView().findViewById(R.id.create_button);
+        materialButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TextInputEditText title = getView().findViewById(R.id.title_edit_text);
+                TextInputEditText description = getView().findViewById(R.id.text_edit_text);
+                //TODO: 3:17 am
+                ProposalController proposalController = new ProposalController();
+                proposalController.createProposal(createProposalCallback);
+            }
         }
     }
 

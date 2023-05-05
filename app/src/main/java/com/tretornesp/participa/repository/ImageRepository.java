@@ -34,7 +34,6 @@ public class ImageRepository {
 
     public static void putDrawable(String token, String fullUrl, ImageView imageView) {
 
-        LoginService loginService = LoginService.getInstance();
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(fullUrl).build();
         client.newCall(request).enqueue(new Callback() {
