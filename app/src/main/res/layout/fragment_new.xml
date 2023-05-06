@@ -111,43 +111,6 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/image_2_1"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:scaleType="centerInside"
-                app:srcCompat="@drawable/placeholder" />
-
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/image_2_2"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:scaleType="centerInside"
-                app:srcCompat="@drawable/placeholder" />
-
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/image_2_3"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:scaleType="centerInside"
-                app:srcCompat="@drawable/placeholder" />
-
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/image_2_4"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:scaleType="centerInside"
-                app:srcCompat="@drawable/placeholder" />
-
-        </LinearLayout>
-
     </LinearLayout>
 
     <LinearLayout

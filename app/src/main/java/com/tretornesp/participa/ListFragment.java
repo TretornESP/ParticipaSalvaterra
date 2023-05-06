@@ -14,16 +14,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.tretornesp.participa.controller.ListController;
 import com.tretornesp.participa.model.ProposalModel;
 import com.tretornesp.participa.model.UserModel;
+import com.tretornesp.participa.model.controller.ImageViewLoadControllerModel;
 import com.tretornesp.participa.model.controller.ListLoadControllerModel;
 import com.tretornesp.participa.service.ProposalService;
 import com.tretornesp.participa.util.Callback;
@@ -66,6 +70,40 @@ public class ListFragment extends Fragment {
         }
     };
 
+    private final Callback loadImageCallback = new Callback() {
+        private void toast(String message) {
+            getActivity().runOnUiThread(() -> Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show());
+        }
+
+        @Override
+        public void onSuccess(Object data) {
+            ImageViewLoadControllerModel response = (ImageViewLoadControllerModel) data;
+            ImageView imageView = response.getImage();
+            String signed = response.getUrl();
+
+            imageView.post(() -> {
+                if (getContext() != null) {
+                    Log.d("ListFragment", "Loading image");
+                    Glide.with(getContext()).load(signed).into(imageView);
+                } else {
+                    Log.d("ListFragment", "Context is null");
+                }
+            });
+        }
+
+        @Override
+        public void onFailure(String message) {
+            Log.d("ListFragment", "Error loading image: " + message);
+        }
+
+        @Override
+        public void onLoginRequired() {
+            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container_login, new LoginFragment());
+            transaction.commit();
+        }
+    };
+
     private final Callback loadListCallback = new Callback() {
         private void toast(String message) {
             getActivity().runOnUiThread(() -> Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show());
@@ -73,9 +111,12 @@ public class ListFragment extends Fragment {
 
         @Override
         public void onSuccess(Object result) {
+            ListController listController = new ListController();
+
             ListLoadControllerModel response = (ListLoadControllerModel) result;
             List<ProposalModel> proposals = response.getProposals();
-            List<String> liked_proposals = response.getUser().getLiked_proposals();
+            UserModel currentUser = response.getUser();
+            List<String> liked_proposals = currentUser.getLiked_proposals();
 
             LinearLayout linearLayout = getView().findViewById(R.id.scrollable);
 
@@ -83,15 +124,26 @@ public class ListFragment extends Fragment {
                 Log.d("ListFragment", "Proposal title: " + proposal.getTitle());
 
                 MaterialCardView cardView = new MaterialCardView(linearLayout.getContext());
-                cardView.setLayoutParams(new MaterialCardView.LayoutParams(
-                        MaterialCardView.LayoutParams.WRAP_CONTENT,
-                        MaterialCardView.LayoutParams.WRAP_CONTENT
-                ));
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                );
+                layoutParams.setMargins(15, 15, 15, 15);
+                cardView.setLayoutParams(layoutParams);
 
                 //Inflate the card view
                 LayoutInflater inflater = (LayoutInflater) linearLayout.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.list_item, null);
+                MaterialButton edit = layout.findViewById(R.id.edit_proposal);
+
+                if (proposal.getAuthor().equals(currentUser.getUid())) {
+                    edit.setVisibility(View.VISIBLE);
+                } else {
+                    edit.setVisibility(View.GONE);
+                }
+                ImageView imageView = layout.findViewById(R.id.banner_image);
                 TextView title = layout.findViewById(R.id.title);
+                listController.loadImage(proposal.getMain_photo(), imageView, loadImageCallback);
                 title.post(() -> title.setText(proposal.getTitle()));
                 TextView description = layout.findViewById(R.id.secondary_text);
                 description.post(() -> description.setText(proposal.getDescription()));
@@ -119,7 +171,6 @@ public class ListFragment extends Fragment {
                             image.setBackground(getContext().getDrawable(R.drawable.ic_baseline_favorite_border_24));
 
                         }
-                        ListController listController = new ListController();
                         listController.like(proposal.getId(), likeCallback);
                     }
                 });
@@ -136,7 +187,6 @@ public class ListFragment extends Fragment {
                             if (image.getTag() == null || image.getTag().equals("unliked")) {
                                 image.setTag("liked");
                                 image.setBackground(getContext().getDrawable(R.drawable.ic_baseline_favorite_border_24_red));
-                                ListController listController = new ListController();
                                 listController.like(proposal.getId(), likeCallback);
                             }
                         }

@@ -1,5 +1,7 @@
 package com.tretornesp.participa.service;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.tretornesp.participa.model.CredentialsModel;
@@ -38,6 +40,54 @@ public class LoginService {
         return instance.cached_credentials;
     }
 
+    public boolean has(Context context) {
+        SharedPreferences sharedPref = context.getSharedPreferences("credentials", Context.MODE_PRIVATE);
+
+        String token = sharedPref.getString("token", null);
+        String refresh = sharedPref.getString("refresh", null);
+        String user = sharedPref.getString("user", null);
+
+        return token != null && refresh != null && user != null;
+    }
+    public void persist(Context context) {
+        SharedPreferences sharedPref = context.getSharedPreferences("credentials", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+
+        editor.putString("token", this.cached_credentials.getToken());
+        editor.putString("refresh", this.cached_credentials.getRefresh());
+        editor.putString("user", this.cached_credentials.getUser().toJson());
+
+        editor.apply();
+    }
+    public void use(Context context) {
+        this.cached_credentials = load(context);
+    }
+    public CredentialsModel load(Context context) {
+        SharedPreferences sharedPref = context.getSharedPreferences("credentials", Context.MODE_PRIVATE);
+
+        String token = sharedPref.getString("token", null);
+        String refresh = sharedPref.getString("refresh", null);
+        String user = sharedPref.getString("user", null);
+
+        if (token == null || refresh == null || user == null) {
+            return null;
+        }
+
+        this.cached_credentials = new CredentialsModel(token, refresh, UserModel.fromJson(user));
+
+        return this.cached_credentials;
+    }
+    public void invalidate(Context context) {
+        SharedPreferences sharedPref = context.getSharedPreferences("credentials", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+
+        editor.remove("token");
+        editor.remove("refresh");
+        editor.remove("user");
+
+        editor.apply();
+    }
+
     public CredentialsModel login(String user, String password) {
         ServerRepository repository = new ServerRepository();
 
@@ -53,6 +103,7 @@ public class LoginService {
             return null;
         }
     }
+
     public boolean isLoggedIn(String token) {
         if (this.cached_credentials == null) {
             return false;
@@ -63,6 +114,7 @@ public class LoginService {
 
         return this.cached_credentials.getToken().equals(token);
     }
+
     public void logout(String token) {
         ServerRepository repository = new ServerRepository();
 

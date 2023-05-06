@@ -28,7 +28,7 @@
             android:scaleType="centerInside"
             app:shapeAppearanceOverlay="@style/circleImageView"
             app:strokeWidth="5dp"
-            app:srcCompat="@drawable/cara"/>
+            app:srcCompat="@drawable/defaultpic"/>
 
         <RelativeLayout
             android:id="@+id/profile_layout"

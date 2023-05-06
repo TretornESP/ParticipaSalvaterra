@@ -1,18 +1,6 @@
 package com.tretornesp.participa.model;
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import androidx.core.content.ContextCompat;
-
-import com.google.android.material.card.MaterialCardView;
-import com.google.android.material.imageview.ShapeableImageView;
 import com.google.gson.Gson;
-import com.tretornesp.participa.R;
-import com.tretornesp.participa.repository.ImageRepository;
 
 import java.util.List;
 
@@ -82,6 +70,23 @@ public class ProposalModel {
     public static ProposalModel fromJson(String json) {
         Gson gson = new Gson();
         return gson.fromJson(json, ProposalModel.class);
+    }
+
+    public void setMain_photo(String main_photo) {
+        this.main_photo = main_photo;
+    }
+
+    public void setPhotos(List<String> photos) {
+        this.photos = photos;
+    }
+
+    public void setPhoto(String photo, String new_photo) {
+        for (int i = 0; i < photos.size(); i++) {
+            if (photos.get(i) != null && photos.get(i).equals(photo)) {
+                photos.set(i, new_photo);
+                break;
+            }
+        }
     }
 
     /*

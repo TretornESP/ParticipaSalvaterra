@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.tretornesp.participa.controller.ProfileController;
 import com.tretornesp.participa.model.CredentialsModel;
 import com.tretornesp.participa.model.UserModel;
@@ -35,9 +37,10 @@ public class ProfileFragment extends Fragment {
             UserModel user = (UserModel) result;
 
             TextView name = getView().findViewById(R.id.user_profile_name);
+            ShapeableImageView image = getView().findViewById(R.id.user_profile_photo);
             name.post(() -> name.setText(user.getName()));
-            Log.d("ProfileFragment", "User name: " + user.getName());
-            Log.d("ProfileFragment", "User field name: " + name.getText());
+            image.post(() -> Glide.with(getContext()).load(user.getPhoto()).into(image));
+
         }
 
         @Override
@@ -58,6 +61,13 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ProfileController profileController = new ProfileController();
+        profileController.loadProfile(loadProfileCallback);
     }
 
     @Override

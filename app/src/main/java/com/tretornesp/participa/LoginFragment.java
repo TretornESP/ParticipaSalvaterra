@@ -27,7 +27,6 @@ public class LoginFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -35,6 +34,18 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_login, container, false);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        LoginService service = LoginService.getInstance();
+        if (service.has(getContext())) {
+            getActivity().runOnUiThread(() -> {
+                Intent intent = new Intent(getContext(), MainActivity.class);
+                startActivity(intent);
+            });
+        }
     }
 
     @Override
@@ -65,11 +76,12 @@ public class LoginFragment extends Fragment {
                     @Override
                     public void run() {
                         if (service.login(email.getText().toString(), password.getText().toString()) != null) {
+                            service.persist(getContext());
                             getActivity().runOnUiThread(() -> {
-                                Intent intent = new Intent(getActivity(), MainActivity.class);
+                                Toast.makeText(getContext(), "Login successful", Toast.LENGTH_LONG).show();
+                                Intent intent = new Intent(getContext(), MainActivity.class);
                                 startActivity(intent);
                             });
-
                         } else {
                             getActivity().runOnUiThread(() -> {
                                 Toast.makeText(getContext(), "Error login", Toast.LENGTH_LONG).show();

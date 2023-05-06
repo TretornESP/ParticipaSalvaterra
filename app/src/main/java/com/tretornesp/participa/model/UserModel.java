@@ -33,6 +33,11 @@ public class UserModel {
         return gson.fromJson(json, UserModel.class);
     }
 
+    public String toJson() {
+        Gson gson = new Gson();
+        return gson.toJson(this);
+    }
+
     @Override
     public String toString() {
         return "UserModel{" +
@@ -51,6 +56,10 @@ public class UserModel {
 
     public String getPhoto() {
         return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 
     public String getUid() {

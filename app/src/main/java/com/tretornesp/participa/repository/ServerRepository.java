@@ -8,12 +8,14 @@ import androidx.annotation.NonNull;
 import com.tretornesp.participa.BuildConfig;
 import com.tretornesp.participa.model.request.LoginRequestModel;
 import com.tretornesp.participa.repository.exception.BadRequestException;
+import com.tretornesp.participa.repository.exception.ImageTooBigException;
 import com.tretornesp.participa.repository.exception.LoginRequiredException;
 import com.tretornesp.participa.repository.exception.RequestConformingException;
 import com.tretornesp.participa.repository.exception.ResponseProcessingException;
 import com.tretornesp.participa.repository.exception.ServerErrorException;
 import com.tretornesp.participa.repository.exception.TokenExpiredException;
 import com.tretornesp.participa.repository.exception.UnknownResponseCodeException;
+import com.tretornesp.participa.util.ImageHandler;
 import com.tretornesp.participa.util.SSLUtil;
 
 import org.json.JSONException;
@@ -108,9 +110,10 @@ public class ServerRepository {
         }
     }
     private Request uploadRequest(String url, String token, File file) {
+        Log.d("CUAK", "uploadRequest to [" + url + "]: " + file.getAbsoluteFile());
         RequestBody body = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("file", file.getName(), RequestBody.create(file, MediaType.parse("image/*")))
+                .addFormDataPart("file", file.getName(), RequestBody.create(MediaType.parse("image/jpeg"), file.getAbsoluteFile()))
                 .build();
 
         if (token == null || token.equals("")) {
@@ -155,13 +158,16 @@ public class ServerRepository {
         }
     }
 
-    private InternalResponse parseResponse(Response response) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, IOException, JSONException {
+    private InternalResponse parseResponse(Response response) throws TokenExpiredException, BadRequestException, ImageTooBigException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, IOException, JSONException {
+        InternalResponse internalResponse = new InternalResponse(response.body().string(), response.code());
+
+        Log.d("CUAK", "parseResponse: " + internalResponse.getCode() + " body: " + internalResponse.getBody());
         switch (response.code()) {
             case 200: {
-                return new InternalResponse(response.body().string(), response.code());
+                return internalResponse;
             }
             case 201: {
-                return new InternalResponse(response.body().string(), response.code());
+                return internalResponse;
             }
             case 400: {
                 throw new BadRequestException("Bad request");
@@ -180,7 +186,10 @@ public class ServerRepository {
                 throw new LoginRequiredException("Forbidden");
             }
             case 412: {
-                return new InternalResponse(response.body().string(), response.code());
+                return new InternalResponse("", 412);
+            }
+            case 413: {
+                throw new ImageTooBigException("Image too large");
             }
             case 422: {
                 throw new BadRequestException("Unsafe input detected");
@@ -192,7 +201,7 @@ public class ServerRepository {
                 throw new UnknownResponseCodeException("Unknown response code");
         }
     }
-    private InternalResponse act(Method method, String urlPart, String token, String body, File file) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException {
+    private InternalResponse act(Method method, String urlPart, String token, String body, File file) throws TokenExpiredException, ImageTooBigException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException {
         String baseUrl = BuildConfig.ROOT_URL + urlPart;
 
         Request request;
@@ -226,10 +235,13 @@ public class ServerRepository {
         OkHttpClient client = builder.build();
 
         try (Response response = client.newCall(request).execute()) {
+            Log.d("CUAK", "Got response: " + response.code());
             return parseResponse(response);
         } catch (IOException ioe) {
+            Log.d("CUAK", "Got IOException parsing response: " + ioe.getMessage());
             throw new ResponseProcessingException("[" + baseUrl + "]Got IOException parsing response: " + ioe.getMessage());
         } catch (JSONException e) {
+            Log.d("CUAK", "Got JSONException parsing response: " + e.getMessage());
             throw new ResponseProcessingException("Cant parse json response");
         }
 
@@ -237,56 +249,56 @@ public class ServerRepository {
 
     //Security calls
 
-    public String login(String loginData) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException {
+    public String login(String loginData) throws ImageTooBigException, TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException {
         InternalResponse internalResponse = act(Method.POST, loginUri, null, loginData, null);
         return internalResponse.getBody();
     }
-    public void logout(String token) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException{
+    public void logout(String token) throws ImageTooBigException, TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException{
         act(Method.DELETE, logoutUri, token, null, null);
     }
-    public boolean validateToken(String token) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException {
+    public boolean validateToken(String token) throws ImageTooBigException, TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException {
         InternalResponse internalResponse = act(Method.GET, validateUri, token, null, null);
         return internalResponse.getCode() == 200;
     }
-    public String refreshToken(String token) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException {
+    public String refreshToken(String token) throws ImageTooBigException, TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException {
         InternalResponse internalResponse = act(Method.GET, refreshUri, token, null, null);
         return internalResponse.getBody();
     }
 
 
-    public boolean isVerified(String token) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException {
+    public boolean isVerified(String token) throws ImageTooBigException, TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException {
         InternalResponse internalResponse = act(Method.GET, verifyUri, token, null, null);
         return internalResponse.getCode() == 200;
     }
 
     //User calls
-    public String getCurrentUser(String token) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException {
+    public String getCurrentUser(String token) throws ImageTooBigException, TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException {
         InternalResponse internalResponse = act(Method.GET, userUri, token, null, null);
         return internalResponse.getBody();
     }
 
-    public String getUser(String token, String uid) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException {
+    public String getUser(String token, String uid) throws ImageTooBigException, TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException {
         InternalResponse internalResponse = act(Method.GET, userUri + uid, token, null, null);
         return internalResponse.getBody();
     }
 
-    public String editUser(String token, String user) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException {
+    public String editUser(String token, String user) throws ImageTooBigException, TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException {
         InternalResponse internalResponse = act(Method.PUT, userUri, token, user, null);
         return internalResponse.getBody();
     }
 
-    public void deleteUser(String token) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException{
+    public void deleteUser(String token) throws ImageTooBigException, TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException{
         act(Method.DELETE, userUri, token, null, null);
     }
 
-    public String registerUser(String user) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException{
+    public String registerUser(String user) throws ImageTooBigException, TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException{
         InternalResponse internalResponse = act(Method.POST, userUri, null, user, null);
         return internalResponse.getBody();
     }
 
     //Proposal calls
 
-    public String getProposals(String token, String start, Integer size) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException {
+    public String getProposals(String token, String start, Integer size) throws ImageTooBigException, TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException {
         String baseUrl;
         if (size == null) {
             baseUrl = proposalUri;
@@ -302,43 +314,43 @@ public class ServerRepository {
         return internalResponse.getBody();
     }
 
-    public String getProposal(String token, String uid) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException{
+    public String getProposal(String token, String uid) throws ImageTooBigException, TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException{
         InternalResponse internalResponse = act(Method.GET, proposalUri+uid, token, null, null);
         return internalResponse.getBody();
     }
 
-    public String createProposal(String token, String proposalData) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException{
+    public String createProposal(String token, String proposalData) throws ImageTooBigException, TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException{
         InternalResponse internalResponse = act(Method.POST, proposalUri, token, proposalData, null);
         return internalResponse.getBody();
     }
 
-    public void deleteProposal(String token, String proposalId) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException{
+    public void deleteProposal(String token, String proposalId) throws ImageTooBigException, TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException{
         act(Method.DELETE, proposalUri + proposalId, token, null, null);
     }
 
-    public String editProposal(String token, String proposalId, String proposalData) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException{
+    public String editProposal(String token, String proposalId, String proposalData) throws ImageTooBigException, TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException{
         InternalResponse internalResponse = act(Method.PUT, proposalUri + proposalId, token, proposalData, null);
         return internalResponse.getBody();
     }
 
-    public String likeProposal(String token, String proposalId) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException{
+    public String likeProposal(String token, String proposalId) throws ImageTooBigException, TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException{
         InternalResponse internalResponse = act(Method.GET, proposalUri + "like?id=" + proposalId, token, null, null);
         return internalResponse.getBody();
     }
 
-    public String unlikeProposal(String token, String proposalId) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException{
+    public String unlikeProposal(String token, String proposalId) throws ImageTooBigException, TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException{
         InternalResponse internalResponse = act(Method.GET, proposalUri + "dislike?id=" + proposalId, token, null, null);
         return internalResponse.getBody();
     }
 
     //Upload calls
 
-    public String uploadImage(String token, File image) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException {
+    public String uploadImage(String token, File image) throws ImageTooBigException, TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException {
         InternalResponse internalResponse = act(Method.UPLOAD, uploadUri, token, null, image);
         return internalResponse.getBody();
     }
 
-    public String presignImage(String token, String file) throws TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException {
+    public String presignImage(String token, String file) throws ImageTooBigException, TokenExpiredException, BadRequestException, LoginRequiredException, UnknownResponseCodeException, ServerErrorException, ResponseProcessingException, RequestConformingException {
         String baseUrl = uploadUri + "/" + file;
         InternalResponse internalResponse = act(Method.GET, baseUrl, token, null, null);
         return internalResponse.getBody();

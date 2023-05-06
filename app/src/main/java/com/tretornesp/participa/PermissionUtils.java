@@ -36,6 +36,7 @@ public abstract class PermissionUtils {
      * Requests the fine and coarse location permissions. If a rationale with an additional
      * explanation should be shown to the user, displays a dialog that triggers the request.
      */
+    /*
     public static void requestLocationPermissions(AppCompatActivity activity, int requestId,
                                                   boolean finishActivity) {
         if (ActivityCompat
@@ -52,7 +53,7 @@ public abstract class PermissionUtils {
                     requestId);
         }
     }
-
+    */
     /**
      * Checks if the result contains a {@link PackageManager#PERMISSION_GRANTED} result for a
      * permission from a runtime permissions request.
@@ -126,6 +127,8 @@ public abstract class PermissionUtils {
         private static final String ARGUMENT_FINISH_ACTIVITY = "finish";
 
         private boolean finishActivity = false;
+        private String info_message;
+        private String abort_message;
 
         /**
          * Creates a new instance of a dialog displaying the rationale for the use of the location
@@ -138,12 +141,14 @@ public abstract class PermissionUtils {
          * @param finishActivity Whether the calling Activity should be finished if the dialog is
          * cancelled.
          */
-        public static RationaleDialog newInstance(int requestCode, boolean finishActivity) {
+        public static RationaleDialog newInstance(int requestCode, boolean finishActivity, String message, String abort) {
             Bundle arguments = new Bundle();
             arguments.putInt(ARGUMENT_PERMISSION_REQUEST_CODE, requestCode);
             arguments.putBoolean(ARGUMENT_FINISH_ACTIVITY, finishActivity);
             RationaleDialog dialog = new RationaleDialog();
             dialog.setArguments(arguments);
+            dialog.info_message = message;
+            dialog.abort_message = abort;
             return dialog;
         }
 
@@ -154,7 +159,7 @@ public abstract class PermissionUtils {
             finishActivity = arguments.getBoolean(ARGUMENT_FINISH_ACTIVITY);
 
             return new AlertDialog.Builder(getActivity())
-                    .setMessage(R.string.permission_rationale_location)
+                    .setMessage(info_message)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -175,7 +180,7 @@ public abstract class PermissionUtils {
             super.onDismiss(dialog);
             if (finishActivity) {
                 Toast.makeText(getActivity(),
-                                R.string.permission_required_toast,
+                                abort_message,
                                 Toast.LENGTH_SHORT)
                         .show();
                 getActivity().finish();
