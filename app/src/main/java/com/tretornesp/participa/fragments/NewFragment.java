@@ -1,14 +1,11 @@
-package com.tretornesp.participa;
+package com.tretornesp.participa.fragments;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -32,10 +29,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.TextInputEditText;
+import com.tretornesp.participa.MainActivity;
+import com.tretornesp.participa.R;
 import com.tretornesp.participa.controller.ProposalController;
 import com.tretornesp.participa.model.ProposalModel;
-import com.tretornesp.participa.model.UserModel;
-import com.tretornesp.participa.service.UploadsService;
 import com.tretornesp.participa.util.Callback;
 import com.tretornesp.participa.util.CancellableFrame;
 import com.tretornesp.participa.util.ImageHandler;
@@ -67,7 +64,7 @@ public class NewFragment extends CancellableFrame {
 
         switch (which){
             case DialogInterface.BUTTON_POSITIVE:
-                getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsFragment()).commit();
+                ((MainActivity)getActivity()).showMap();
                 break;
 
             case DialogInterface.BUTTON_NEGATIVE:
@@ -111,7 +108,7 @@ public class NewFragment extends CancellableFrame {
                 button.setClickable(true);
             });
 
-            getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsFragment()).commit();
+            ((MainActivity)getActivity()).showMap();
         }
 
         @Override
@@ -134,9 +131,7 @@ public class NewFragment extends CancellableFrame {
             });
 
             Log.d("NewFragment", "Login required");
-            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container_login, new LoginFragment());
-            transaction.commit();
+            ((MainActivity)getActivity()).showLogin();
         }
     };
 

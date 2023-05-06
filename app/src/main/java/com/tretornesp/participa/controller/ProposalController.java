@@ -1,14 +1,17 @@
 package com.tretornesp.participa.controller;
 
+import android.telecom.Call;
 import android.util.Log;
 
 import com.tretornesp.participa.model.CoordinatesModel;
 import com.tretornesp.participa.model.CredentialsModel;
 import com.tretornesp.participa.model.ProposalModel;
 import com.tretornesp.participa.model.request.CreateProposalRequestModel;
+import com.tretornesp.participa.model.request.EditUserRequestModel;
 import com.tretornesp.participa.service.LoginService;
 import com.tretornesp.participa.service.ProposalService;
 import com.tretornesp.participa.service.UploadsService;
+import com.tretornesp.participa.service.UserService;
 import com.tretornesp.participa.service.exception.TokenMissingException;
 import com.tretornesp.participa.util.Callback;
 
@@ -101,12 +104,61 @@ public class ProposalController {
         }
     }
 
+    public void _delete(String id, Callback callback) {
+        ProposalService proposalService = ProposalService.getInstance();
+        try {
+            CredentialsModel credentials = LoginService.getCredentials();
+            proposalService.deleteProposal(credentials.getToken(), id);
+            callback.onSuccess(null);
+        } catch (TokenMissingException tke) {
+            callback.onLoginRequired();
+        } catch (Exception e) {
+            callback.onFailure(e.getMessage());
+        }
+    }
+
     public void create(String title, String description, File main_photo, List<File> photos, double latitude, double longitude, Callback callback) {
         Log.d("NewFragment", "createProposal: " + title + " " + description + " " + main_photo + " " + photos + " " + latitude + " " + longitude);
         new Thread(new Runnable() {
             @Override
             public void run() {
                 _create(title, description, main_photo, photos, latitude, longitude, callback);
+            }
+        }).start();
+    }
+
+    public void _load(String id, Callback callback) {
+        ProposalService proposalService = ProposalService.getInstance();
+        try {
+            CredentialsModel credentials = LoginService.getCredentials();
+            ProposalModel proposal = proposalService.getProposal(credentials.getToken(), id);
+            if (proposal != null) {
+                callback.onSuccess(proposal);
+            } else {
+                callback.onFailure("No se ha podido cargar la propuesta");
+            }
+        } catch (TokenMissingException tke) {
+            callback.onLoginRequired();
+        } catch (Exception e) {
+            callback.onFailure(e.getMessage());
+        }
+    }
+
+
+    public void load(String id, Callback callback) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                _load(id, callback);
+            }
+        }).start();
+    }
+
+    public void delete(String id, Callback callback) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                _delete(id, callback);
             }
         }).start();
     }

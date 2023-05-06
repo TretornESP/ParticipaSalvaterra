@@ -1,4 +1,4 @@
-package com.tretornesp.participa;
+package com.tretornesp.participa.fragments;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -7,29 +7,21 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.location.Location;
-import android.location.LocationManager;
-import android.location.LocationRequest;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.FutureTarget;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -37,12 +29,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.card.MaterialCardView;
-import com.google.android.material.imageview.ShapeableImageView;
+import com.tretornesp.participa.util.CustomInfoWindowAdapter;
+import com.tretornesp.participa.MainActivity;
+import com.tretornesp.participa.R;
 import com.tretornesp.participa.controller.ListController;
-import com.tretornesp.participa.controller.ProfileController;
-import com.tretornesp.participa.model.CoordinatesModel;
 import com.tretornesp.participa.model.ProposalModel;
 import com.tretornesp.participa.model.UserModel;
 import com.tretornesp.participa.model.controller.ListLoadControllerModel;
@@ -50,9 +40,7 @@ import com.tretornesp.participa.model.controller.SubstitutionProposalImageContro
 import com.tretornesp.participa.util.Callback;
 import com.tretornesp.participa.util.LocationHandler;
 
-import java.io.File;
 import java.util.List;
-import java.util.concurrent.Future;
 
 public class MapsFragment extends Fragment {
 
@@ -150,9 +138,7 @@ public class MapsFragment extends Fragment {
 
         @Override
         public void onLoginRequired() {
-            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container_login, new LoginFragment());
-            transaction.commit();
+            ((MainActivity)getActivity()).showLogin();
         }
     };
 
@@ -164,8 +150,7 @@ public class MapsFragment extends Fragment {
             switch (which){
                 case DialogInterface.BUTTON_POSITIVE:
                     //Disable bottom_navigation
-                    ((MainActivity) getActivity()).disableBottomNavigation();
-                    getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, new NewFragment(currentMarker.getPosition())).commit();
+                    ((MainActivity) getActivity()).showNewProposal(currentMarker.getPosition());
                     break;
 
                 case DialogInterface.BUTTON_NEGATIVE:
@@ -306,8 +291,6 @@ public class MapsFragment extends Fragment {
     public void onResume() {
         super.onResume();
         locationHandler.requestLocationPermission();
-        ((MainActivity) getActivity()).enableBottomNavigation();
-
     }
 
     @Nullable

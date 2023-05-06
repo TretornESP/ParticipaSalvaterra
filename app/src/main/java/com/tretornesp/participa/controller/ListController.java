@@ -41,6 +41,20 @@ public class ListController {
         }
     }
 
+    private void _refresh(Callback callback) {
+        ProposalService proposalService = ProposalService.getInstance();
+
+        try {
+            CredentialsModel credentials = LoginService.getCredentials();
+            UserModel user = UserService.getInstance().getCurrentUser(credentials.getToken());
+            proposalService.invalidateCache();
+            List<ProposalModel> proposals = proposalService.getProposals(credentials.getToken(), null, null);
+            callback.onSuccess(new ListLoadControllerModel(user, proposals));
+        } catch (TokenMissingException tme) {
+            callback.onLoginRequired();
+        }
+    }
+
     private void _getSignedImage(String url, ImageView image, Callback callback) {
         UploadsService uploadsService = UploadsService.getInstance();
 
@@ -131,6 +145,15 @@ public class ListController {
             @Override
             public void run() {
                 _loadListItem(v, id, callback);
+            }
+        }).start();
+    }
+
+    public void refresh(Callback callback) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                _refresh(callback);
             }
         }).start();
     }

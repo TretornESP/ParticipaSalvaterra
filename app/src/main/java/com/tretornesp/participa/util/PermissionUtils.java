@@ -1,4 +1,4 @@
-package com.tretornesp.participa;
+package com.tretornesp.participa.util;
 
 // Copyright 2020 Google LLC
 //
@@ -26,6 +26,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.DialogFragment;
 import android.widget.Toast;
+
+import com.tretornesp.participa.R;
 
 /**
  * Utility class for access to runtime permissions.

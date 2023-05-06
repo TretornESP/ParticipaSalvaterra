@@ -47,13 +47,15 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:layout_gravity="center"
-                    android:id="@+id/edit_proposal"
+                    android:id="@+id/remove_proposal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:backgroundTint="@color/critical_bg"
                     android:layout_centerVertical="true"
-                    android:layout_alignParentStart="true"
+                    app:strokeColor="@color/common_google_signin_btn_text_dark_pressed"
                     android:visibility="visible"
-                    android:text="@string/edit_proposal"/>
+                    android:text="@string/remove_proposal"/>
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/like"

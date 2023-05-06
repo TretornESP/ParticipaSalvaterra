@@ -1,22 +1,18 @@
-package com.tretornesp.participa;
+package com.tretornesp.participa.fragments;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,16 +20,20 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.tretornesp.participa.MainActivity;
+import com.tretornesp.participa.R;
 import com.tretornesp.participa.controller.ListController;
+import com.tretornesp.participa.controller.ProposalController;
 import com.tretornesp.participa.model.ProposalModel;
 import com.tretornesp.participa.model.UserModel;
 import com.tretornesp.participa.model.controller.ImageViewLoadControllerModel;
 import com.tretornesp.participa.model.controller.ListLoadControllerModel;
 import com.tretornesp.participa.service.ProposalService;
 import com.tretornesp.participa.util.Callback;
+import com.tretornesp.participa.util.Notification;
 
-import org.w3c.dom.Text;
-
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -41,6 +41,7 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class ListFragment extends Fragment {
+    private String current_pid = null;
 
     private final Callback likeCallback = new Callback() {
         private void toast(String message) {
@@ -64,9 +65,7 @@ public class ListFragment extends Fragment {
 
         @Override
         public void onLoginRequired() {
-            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container_login, new LoginFragment());
-            transaction.commit();
+            ((MainActivity) getActivity()).showLogin();
         }
     };
 
@@ -98,9 +97,49 @@ public class ListFragment extends Fragment {
 
         @Override
         public void onLoginRequired() {
-            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container_login, new LoginFragment());
-            transaction.commit();
+            ((MainActivity) getActivity()).showLogin();
+        }
+    };
+
+    private final Callback deleteCallback = new Callback() {
+        private void toast(String message) {
+            getActivity().runOnUiThread(() -> Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show());
+        }
+
+        @Override
+        public void onSuccess(Object data) {
+            toast("Propuesta eliminada");
+            ListController listController = new ListController();
+            listController.refresh(loadListCallback);
+        }
+
+        @Override
+        public void onFailure(String message) {
+            toast("No se ha podido eliminar la propuesta");
+        }
+
+        @Override
+        public void onLoginRequired() {
+            ((MainActivity) getActivity()).showLogin();
+        }
+    };
+
+    private final Callback deleteConfirmCallback = new Callback() {
+        @Override
+        public void onSuccess(Object data) {
+            ProposalController proposalController = new ProposalController();
+            proposalController.delete(current_pid, deleteCallback);
+            Log.d("ListFragment", "Deleting proposal");
+        }
+
+        @Override
+        public void onFailure(String message) {
+
+        }
+
+        @Override
+        public void onLoginRequired() {
+            ((MainActivity) getActivity()).showLogin();
         }
     };
 
@@ -116,9 +155,25 @@ public class ListFragment extends Fragment {
             ListLoadControllerModel response = (ListLoadControllerModel) result;
             List<ProposalModel> proposals = response.getProposals();
             UserModel currentUser = response.getUser();
+            if (currentUser == null) {
+                return;
+            }
             List<String> liked_proposals = currentUser.getLiked_proposals();
 
             LinearLayout linearLayout = getView().findViewById(R.id.scrollable);
+            linearLayout.post(() -> linearLayout.removeAllViews());
+
+            Collections.sort(proposals, new Comparator() {
+                @Override
+                public int compare(Object o1, Object o2) {
+                    ProposalModel p1 = (ProposalModel) o1;
+                    ProposalModel p2 = (ProposalModel) o2;
+                    Float p1_score = p1.getLikes();
+                    Float p2_score = p2.getLikes();
+                    //Most likes first
+                    return p1_score.compareTo(p2_score);
+                }
+            });
 
             for (ProposalModel proposal : proposals) {
                 Log.d("ListFragment", "Proposal title: " + proposal.getTitle());
@@ -134,13 +189,28 @@ public class ListFragment extends Fragment {
                 //Inflate the card view
                 LayoutInflater inflater = (LayoutInflater) linearLayout.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.list_item, null);
-                MaterialButton edit = layout.findViewById(R.id.edit_proposal);
+                layout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //TODO: Show proposal
+                        //((MainActivity) getActivity()).showItem(proposal.getId());
+                    }
+                });
+                MaterialButton remove = layout.findViewById(R.id.remove_proposal);
+                remove.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        current_pid = proposal.getId();
+                        Notification.actOnYes(getActivity(), "Eliminar propuesta", "¿Esta seguro de que desea eliminar la propuesta?", deleteConfirmCallback);
+                    }
+                });
 
                 if (proposal.getAuthor().equals(currentUser.getUid())) {
-                    edit.setVisibility(View.VISIBLE);
+                    remove.setVisibility(View.VISIBLE);
                 } else {
-                    edit.setVisibility(View.GONE);
+                    remove.setVisibility(View.GONE);
                 }
+
                 ImageView imageView = layout.findViewById(R.id.banner_image);
                 TextView title = layout.findViewById(R.id.title);
                 listController.loadImage(proposal.getMain_photo(), imageView, loadImageCallback);
@@ -206,9 +276,7 @@ public class ListFragment extends Fragment {
 
         @Override
         public void onLoginRequired() {
-            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container_login, new LoginFragment());
-            transaction.commit();
+            ((MainActivity) getActivity()).showLogin();
         }
     };
 
@@ -219,6 +287,7 @@ public class ListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     //Whenever the user sees the fragment
@@ -236,6 +305,13 @@ public class ListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_list, container, false);
+        View v = inflater.inflate(R.layout.fragment_list, container, false);
+        SwipeRefreshLayout swipeRefreshLayout = v.findViewById(R.id.swipe_refresh);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            ListController listController = new ListController();
+            listController.refresh(loadListCallback);
+            swipeRefreshLayout.setRefreshing(false);
+        });
+        return v;
     }
 }

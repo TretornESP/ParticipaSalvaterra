@@ -8,6 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="search_bg">#ebf5ec</color>
+    <color name="critical_bg">#ed0707</color>
     <color name="primaryTextColor">#00a5ff</color>
     <color name="whiteTextColor">#fff</color>
 

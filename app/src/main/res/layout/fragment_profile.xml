@@ -44,23 +44,35 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="76dp"
+                android:layout_marginTop="70dp"
                 android:text="@string/dummy_name"
                 android:textColor="#000"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
+            <ImageView
+                android:layout_marginTop="75dp"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_marginStart="5dp"
+                android:layout_toEndOf="@id/user_profile_name"
+                android:src="@drawable/ic_baseline_edit_24"
+                android:contentDescription="@string/edit_name" />
+
             <TextView
-                android:id="@+id/user_profile_short_bio"
+                android:layout_marginTop="10dp"
+
+                android:id="@+id/user_profile_visibility"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/user_profile_name"
                 android:layout_centerHorizontal="true"
-                android:visibility="invisible"
-                android:layout_marginTop="12dp"
-                android:text="@string/dummy_bio"
-                android:textColor="#000"
-                android:textSize="14sp" />
+                android:layout_below="@id/user_profile_name"
+                android:text="@string/dummy_visibility"
+                android:textColor="#474444"
+                android:background="@drawable/tag_shape"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
         </RelativeLayout>
 
 
@@ -83,6 +95,7 @@
                 android:focusable="true" />
 
             <TextView
+                android:id="@+id/proposals_i_liked_button"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
@@ -96,17 +109,20 @@
                 android:focusable="true" />
 
             <TextView
+                android:id="@+id/report_proposal_button"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:background="#fff"
                 android:clickable="true"
+                android:textColor="#000000"
                 android:elevation="4dp"
                 android:padding="20dp"
                 android:text="@string/report_proposal"
                 android:focusable="true" />
 
             <TextView
+                android:id="@+id/help_button"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
@@ -114,12 +130,14 @@
                 android:layout_marginTop="3dp"
                 android:background="#fff"
                 android:clickable="true"
+                android:textColor="#000000"
                 android:elevation="4dp"
                 android:padding="20dp"
                 android:text="@string/help"
                 android:focusable="true" />
 
             <TextView
+                android:id="@+id/change_visibility_button"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
@@ -127,6 +145,32 @@
                 android:clickable="true"
                 android:elevation="4dp"
                 android:padding="20dp"
+                android:text="@string/change_visibility"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/change_password_button"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="#fff"
+                android:clickable="true"
+                android:elevation="4dp"
+                android:padding="20dp"
+                android:textColor="#000000"
+                android:text="@string/change_password"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/logout_button"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="#fff"
+                android:clickable="true"
+                android:elevation="4dp"
+                android:padding="20dp"
+                android:textColor="#000000"
                 android:text="@string/logout"
                 android:focusable="true" />
         </LinearLayout>

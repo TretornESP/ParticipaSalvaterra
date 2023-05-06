@@ -13,8 +13,8 @@
     <string name="dummy_no_me_gusta">No me gusta</string>
     <string name="exit_edit">¿Realmente desea descartar la propuesta?</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="dummy_name">Xabier Iglesias</string>
-    <string name="dummy_bio">Desarrollador de software</string>
+    <string name="dummy_name">Salvaterrense</string>
+    <string name="dummy_visibility">Perfil privado</string>
     <string name="profile_pìc_description">Imagen de perfil</string>
     <string name="my_proposals">Mis propuestas</string>
     <string name="proposals_i_liked">Propuestas que me han gustado</string>
@@ -47,4 +47,13 @@
     <string name="accept">Aceptar</string>
     <string name="decline">Cancelar</string>
     <string name="edit_proposal">Editar</string>
+    <string name="remove_proposal">Eliminar</string>
+    <string name="edit_profile">Editar</string>
+    <string name="change_password">Cambiar contraseña</string>
+    <string name="edit_name">Editar nombre</string>
+    <string name="change_visibility">Cambiar visibilidad</string>
+    <string name="pass">Contraseña</string>
+    <string name="pass_check">Confirma la contraseña</string>
+    <string name="podemos">PODEMOS</string>
+    <string name="participa_salvaterra">PARTICIPA SALVATERRA</string>
 </resources>

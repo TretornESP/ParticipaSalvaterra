@@ -1,4 +1,4 @@
-package com.tretornesp.participa;
+package com.tretornesp.participa.fragments;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +19,8 @@ import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textview.MaterialTextView;
+import com.tretornesp.participa.MainActivity;
+import com.tretornesp.participa.R;
 import com.tretornesp.participa.controller.RegisterController;
 import com.tretornesp.participa.model.UserModel;
 import com.tretornesp.participa.util.Callback;
@@ -39,9 +40,7 @@ public class RegisterFragment extends Fragment {
         @Override
         public void onSuccess (Object data) {
             Log.d("RegisterFragment", "Registered user: " + ((UserModel)data).getUid());
-            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_container_login, new LoginFragment());
-            transaction.commit();
+            ((MainActivity)getActivity()).showLogin();
         }
 
         @Override
@@ -105,9 +104,7 @@ public class RegisterFragment extends Fragment {
         materialTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-                transaction.replace(R.id.fragment_container_login, new LoginFragment());
-                transaction.commit();
+                ((MainActivity)getActivity()).showLogin();
             }
         });
 

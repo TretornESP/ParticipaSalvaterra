@@ -72,6 +72,11 @@ public class ProposalModel {
         return gson.fromJson(json, ProposalModel.class);
     }
 
+    public String toJson() {
+        Gson gson = new Gson();
+        return gson.toJson(this);
+    }
+
     public void setMain_photo(String main_photo) {
         this.main_photo = main_photo;
     }

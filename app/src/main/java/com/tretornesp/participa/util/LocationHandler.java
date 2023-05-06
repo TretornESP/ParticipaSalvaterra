@@ -12,7 +12,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 
-import com.tretornesp.participa.PermissionUtils;
 import com.tretornesp.participa.model.CoordinatesModel;
 
 import java.util.HashMap;

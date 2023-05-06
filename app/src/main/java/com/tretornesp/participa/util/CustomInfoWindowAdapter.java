@@ -1,4 +1,4 @@
-package com.tretornesp.participa;
+package com.tretornesp.participa.util;
 
 import android.graphics.Bitmap;
 import android.os.Handler;
@@ -24,6 +24,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.tretornesp.participa.R;
 import com.tretornesp.participa.controller.ListController;
 import com.tretornesp.participa.model.ProposalModel;
 import com.tretornesp.participa.model.controller.ImageViewLoadControllerModel;
