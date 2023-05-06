@@ -163,6 +163,10 @@ public class ListFragment extends Fragment {
             LinearLayout linearLayout = getView().findViewById(R.id.scrollable);
             linearLayout.post(() -> linearLayout.removeAllViews());
 
+            if (proposals == null) {
+                return;
+            }
+
             Collections.sort(proposals, new Comparator() {
                 @Override
                 public int compare(Object o1, Object o2) {

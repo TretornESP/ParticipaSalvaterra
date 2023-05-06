@@ -57,7 +57,7 @@ public class MapsFragment extends Fragment {
         @Override
         public void onSuccess(Object data) {
             SubstitutionProposalImageControllerModel response = (SubstitutionProposalImageControllerModel) data;
-
+            if (proposals == null) return;
             for (ProposalModel proposal : proposals) {
                 if (proposal.getMain_photo().equals(response.getUrl())) {
                     proposal.setMain_photo(response.getSigned());
@@ -101,6 +101,7 @@ public class MapsFragment extends Fragment {
 
             LinearLayout linearLayout = getView().findViewById(R.id.scrollable);
 
+            if (proposals == null) return;
             Handler handler = new Handler(getActivity().getApplication().getMainLooper());
             handler.post(new Runnable() {
                 @Override

@@ -72,23 +72,27 @@ public class LoginFragment extends Fragment {
     }
 
     private void checkLogin(String user, String password) {
-        LoginService service = LoginService.getInstance();
-        Log.d("mainActivity", "Checking login...");
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                CredentialsModel credentialsModel = service.login(user, password);
-                if (credentialsModel != null) {
-                    Log.d("mainActivity", "Login successfull");
-                    checkToken(credentialsModel);
-                } else {
-                    Log.d("mainActivity", "Login failed");
-                    getActivity().runOnUiThread(() -> {
-                        Toast.makeText(getContext(), "Credenciales invalidas", Toast.LENGTH_LONG).show();
-                    });
+        try {
+            LoginService service = LoginService.getInstance();
+            Log.d("mainActivity", "Checking login...");
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    CredentialsModel credentialsModel = service.login(user, password);
+                    if (credentialsModel != null) {
+                        Log.d("mainActivity", "Login successfull");
+                        checkToken(credentialsModel);
+                    } else {
+                        Log.d("mainActivity", "Login failed");
+                        getActivity().runOnUiThread(() -> {
+                            Toast.makeText(getContext(), "Credenciales invalidas", Toast.LENGTH_LONG).show();
+                        });
+                    }
                 }
-            }
-        }).start();
+            }).start();
+        } catch (Exception e) {
+            Log.d("mainActivity", "Login failed");
+        }
     }
 
     @Override
