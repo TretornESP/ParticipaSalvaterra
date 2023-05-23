@@ -34,7 +34,12 @@ public class ProposalController {
             callback.onFailure("El título es demasiado corto");
             return;
         }
-        if (title.length() > 20) {
+        //Check if the title contains something else than a-zA-Z0-9 and spaces
+        if (!title.matches("^[a-zA-Z0-9 ]*$")) {
+            callback.onFailure("El título solo puede contener letras, numeros y espacios");
+            return;
+        }
+        if (title.length() > 40) {
             callback.onFailure("El título es demasiado largo");
             return;
         }
@@ -119,6 +124,7 @@ public class ProposalController {
 
     public void create(String title, String description, File main_photo, List<File> photos, double latitude, double longitude, Callback callback) {
         Log.d("NewFragment", "createProposal: " + title + " " + description + " " + main_photo + " " + photos + " " + latitude + " " + longitude);
+
         new Thread(new Runnable() {
             @Override
             public void run() {

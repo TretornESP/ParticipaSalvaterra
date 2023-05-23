@@ -278,7 +278,7 @@ public class NewFragment extends CancellableFrame {
         image2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                imageHandler.getFromGallery(image2Callback);
+                Toast.makeText(getContext(), "De momento solo se puede subir una imagen", Toast.LENGTH_SHORT).show(); return; //TODO: Changeme
             }
         });
 
@@ -286,7 +286,7 @@ public class NewFragment extends CancellableFrame {
         image3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                imageHandler.getFromGallery(image3Callback);
+                Toast.makeText(getContext(), "De momento solo se puede subir una imagen", Toast.LENGTH_SHORT).show(); return; //TODO: Changeme
             }
         });
 
@@ -294,7 +294,7 @@ public class NewFragment extends CancellableFrame {
         image4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                imageHandler.getFromGallery(image4Callback);
+                Toast.makeText(getContext(), "De momento solo se puede subir una imagen", Toast.LENGTH_SHORT).show(); return; //TODO: Changeme
             }
         });
     }

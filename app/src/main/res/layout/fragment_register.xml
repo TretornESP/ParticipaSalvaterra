@@ -60,6 +60,7 @@
             android:layout_marginTop="@dimen/signup_text_margin_top">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/dni"
+                android:visibility="gone"
                 style="@style/modifiedEditText"
                 android:inputType="text"
                 android:maxLines="1"
@@ -94,16 +95,20 @@
             android:orientation="horizontal">
             <RadioGroup
                 android:id="@+id/radio_group"
+                android:visibility="gone"
+                android:checkedButton="@id/public_selected"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <RadioButton
                     android:id="@+id/public_selected"
+                    android:clickable="false"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Público"/>
 
                 <RadioButton
                     android:id="@+id/private_selected"
+                    android:clickable="false"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Privado"/>

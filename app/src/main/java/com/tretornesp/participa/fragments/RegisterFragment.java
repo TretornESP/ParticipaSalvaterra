@@ -70,9 +70,9 @@ public class RegisterFragment extends Fragment {
                         name,
                         email,
                         password,
-                        dni,
+                        "34798725R", //TODO: Change this
                         passwordConfirmation,
-                        isPublic,
+                        true, //TODO: Change this
                         registerCallback
                 );
                 break;

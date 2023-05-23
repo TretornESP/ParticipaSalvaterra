@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
             Log.d(MainActivity.TAG, "Last fragment is null, defaulting to ListFragment");
             lastFragment = new ListFragment();
         }
-
         if (lastFragment instanceof ListFragment) {
             Log.d(MainActivity.TAG, "Returning to ListFragment");
         }
@@ -131,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(MainActivity.TAG, "Showing register");
         disableBottomNavigation();
         Fragment fragment = new RegisterFragment();
-        navigate(fragment);
+        navigateNoret(fragment);
     }
 
     public void showItem(String item) {

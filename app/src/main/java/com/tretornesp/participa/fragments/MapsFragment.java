@@ -261,14 +261,14 @@ public class MapsFragment extends Fragment {
 
             googleMap.setOnMarkerClickListener(marker -> {
                 String markername = marker.getTitle();
-                Toast.makeText(getContext(), "Marker: " + markername, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), "Marker: " + markername, Toast.LENGTH_SHORT).show();
                 infoDisplayed = true;
                 return false;
             });
 
             googleMap.setOnInfoWindowClickListener(marker -> {
                 String markername = marker.getTitle();
-                Toast.makeText(getContext(), "Clicked info: " + markername, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), "Clicked info: " + markername, Toast.LENGTH_SHORT).show();
             });
 
             //Kind of nasty!

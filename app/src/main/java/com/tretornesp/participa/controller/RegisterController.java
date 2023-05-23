@@ -35,26 +35,26 @@ public class RegisterController {
 
     private void _register(String name, String email, String password, String dni, String passwordConfirmation, boolean ispublic, final Callback callback) {
         if (name.isEmpty() || email.isEmpty() || password.isEmpty() || dni.isEmpty() || passwordConfirmation.isEmpty()) {
-            callback.onFailure("All fields are required");
+            callback.onFailure("Faltan campos por rellenar");
             return;
         }
         if (!isEmailValid(email)) {
-            callback.onFailure("Invalid email");
+            callback.onFailure("El email no es válido");
             return;
         }
         if (!isDniValid(dni)) {
-            callback.onFailure("Invalid DNI");
+            callback.onFailure("El dni no es válido (las letras deben ser mayúsculas)");
             return;
         }
         if (!isPasswordValid(password, passwordConfirmation)) {
-            callback.onFailure("Invalid passwords");
+            callback.onFailure("Las contraseñas no coinciden o no son cumplen los requisitos (mínimo 6 caracteres)");
             return;
         }
 
         RegisterUserRequestModel registerUserRequestModel = new RegisterUserRequestModel(name, email, dni, DEFAULT_PIC, password, ispublic);
         UserModel user = userService.registerUser(registerUserRequestModel);
         if (user == null) {
-            callback.onFailure("Error registering user");
+            callback.onFailure("El usuario ya existe o no se ha podido registrar");
             return;
         }
         callback.onSuccess(user);
